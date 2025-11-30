@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Jaringan</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg,
+            #ff0000, /* merah */
+            #ff7f00, /* jingga */
+            #ffff00, /* kuning */
+            #00ff00, /* hijau */
+            #00ffff, /* cyan */
+            #0000ff, /* biru */
+            #4b0082, /* nila */
+            #8b00ff, /* ungu */
+            #ff00ff, /* magenta */
+            #00ff88, /* hijau neon */
+            #ff006e, /* merah neon */
+            #00a3ff  /* biru langit */
+        );
+        background-size: 1000% 1000%;
+        animation: rgbFlow 10s infinite alternate linear;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        color: #fff;
+        text-align: center;
+    }
+
+    @keyframes rgbFlow {
+        0% {background-position: 0% 50%;}
+        100% {background-position: 100% 50%;}
+    }
+
+    .container {
+        background: rgba(0,0,0,0.45);
+        padding: 25px;
+        width: 90%;
+        max-width: 480px;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(255,255,255,0.4);
+        animation: fadeIn 0.9s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {opacity: 0; transform: scale(.9);}
+        to {opacity: 1; transform: scale(1);}
+    }
+
+    button {
+        background: rgba(255,255,255,0.2);
+        border: 2px solid #fff;
+        color: #fff;
+        padding: 15px;
+        width: 100%;
+        margin: 8px 0;
+        font-size: 18px;
+        border-radius: 10px;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+    button:hover {
+        background: rgba(255,255,255,0.45);
+        transform: scale(1.05);
+    }
+    .hidden {
+        display: none;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="container" id="startScreen">
+    <h2>Apakah Anda Siap? 😎</h2>
+    <p>Silakan tekan tombol Mulai untuk memulai Quiz Jaringan!</p>
+    <button onclick="startQuiz()">Mulai Quiz 🚀</button>
+</div>
+
+<div class="container hidden" id="quizScreen">
+    <h3 id="question">Pertanyaan</h3>
+    <div id="answers"></div>
+</div>
+
+<div class="container hidden" id="resultScreen">
+    <h2>Quiz Selesai 🎉</h2>
+    <p id="scoreText"></p>
+    <p>Jika ingin ulang, silakan refresh aplikasi / web 🔁</p>
+</div>
+
+<script>
+const questions = [
+    {q: "Router berfungsi untuk?", a: ["Menghubungkan jaringan ke jaringan lain", "Memperpanjang kabel LAN", "Memberi IP palsu", "Mempercepat download"], c: 0},
+    {q: "Kabel LAN menggunakan konektor?", a: ["USB", "HDMI", "RJ45", "VGA"], c: 2},
+    {q: "WAN singkatan dari?", a: ["Wide Area Network", "Web Area Network", "Wide Access Node", "Wireless Area Network"], c: 0},
+    {q: "Perangkat untuk membagi koneksi internet?", a: ["Router", "Mouse", "Scanner", "Printer"], c: 0},
+    {q: "Kabel LAN memiliki berapa pasang kabel?", a: ["4", "6", "8", "12"], c: 0},
+    {q: "Switch bekerja pada OSI layer?", a: ["Layer 2", "Layer 4", "Layer 6", "Layer 7"], c: 0},
+    {q: "Contoh IP Address adalah?", a: ["192.168.1.1", "1234-5678", "WA.me/link", "Chrome.exe"], c: 0},
+    {q: "Fiber Optic menggunakan?", a: ["Cahaya", "Listrik", "Gelombang suara", "Air"], c: 0},
+    {q: "Modem berfungsi untuk?", a: ["Mengubah sinyal digital ↔ analog", "Mengukus nasi", "Mematikan internet", "Memperbesar layar"], c: 0},
+    {q: "Topologi jaringan bentuk cincin disebut?", a: ["Bus", "Star", "Ring", "Mesh"], c: 2},
+    {q: "WiFi menggunakan gelombang?", a: ["Mikro", "Radio", "Suara", "Cahaya"], c: 1},
+    {q: "UTP kepanjangan dari?", a: ["Unshielded Twisted Pair", "Universal Turn Pair", "United Top Point", "Unplugged Type Port"], c: 0},
+    {q: "Router biasanya memiliki fitur?", a: ["DHCP", "CD", "DVD", "Scan"], c: 0},
+    {q: "Kecepatan internet disebut?", a: ["Mbps", "Kg", "Liter", "Watt"], c: 0},
+    {q: "LAN mencakup area?", a: ["Lokal kecil", "Satu negara", "Seluruh dunia", "Luar angkasa"], c: 0}
+];
+
+let index = 0;
+let score = 0;
+
+function startQuiz() {
+    document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("quizScreen").classList.remove("hidden");
+    loadQuestion();
+}
+
+function loadQuestion() {
+    const q = questions[index];
+    document.getElementById("question").innerText = q.q;
+
+    const ansDiv = document.getElementById("answers");
+    ansDiv.innerHTML = "";
+
+    q.a.forEach((ans, i) => {
+        const btn = document.createElement("button");
+        btn.innerText = ans;
+        btn.onclick = () => checkAnswer(i);
+        ansDiv.appendChild(btn);
+    });
+}
+
+function checkAnswer(i) {
+    if(i === questions[index].c) score += 100 / questions.length;
+    index++;
+    if(index < questions.length) loadQuestion();
+    else showResult();
+}
+
+function showResult() {
+    document.getElementById("quizScreen").classList.add("hidden");
+    document.getElementById("resultScreen").classList.remove("hidden");
+    document.getElementById("scoreText").innerText = `Score: ${Math.round(score)} Poin`;
+}
+</script>
+
+</body>
+</html>
